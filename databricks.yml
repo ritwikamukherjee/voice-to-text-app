@@ -1,0 +1,21 @@
+bundle:
+  name: voice-to-text-app
+
+variables:
+  catalog:
+    description: The Unity Catalog to use
+    default: my_catalog
+
+  schema:
+    description: The schema to use within the catalog
+    default: default
+
+include:
+  - resources/*.yml
+
+targets:
+  dev:
+    mode: development
+    default: true
+    workspace:
+      root_path: ~/.bundle/${bundle.name}/${bundle.target}
