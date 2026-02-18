@@ -1,0 +1,12 @@
+# Setup (register_model.py): run on a cluster with GPU recommended for speed
+mlflow[databricks]>=2.9.0
+databricks-sdk>=0.18.0
+pandas>=1.5.0
+numpy>=1.23.0
+transformers>=4.36.0
+torch>=2.0.0
+soundfile>=0.12.0
+
+# App (app.py): Gradio UI
+gradio>=5.0.0
+requests>=2.31.0

@@ -1,5 +1,0 @@
-resources:
-  apps:
-    voice_to_text:
-      name: voice-to-text-${bundle.target}
-      source_code_path: ../app
