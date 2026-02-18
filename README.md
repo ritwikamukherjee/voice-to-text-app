@@ -4,6 +4,8 @@ A Gradio web app that transcribes audio using OpenAI's [Whisper](https://hugging
 
 Users record audio via microphone or upload a file, and the app returns a text transcription powered by a Whisper model running on a Databricks Model Serving endpoint.
 
+<img width="1165" height="394" alt="image" src="https://github.com/user-attachments/assets/717dcabe-3316-42b1-af21-a29fda93bd99" />
+
 ## Architecture
 
 ```
