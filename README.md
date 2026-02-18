@@ -1,72 +1,75 @@
 # Voice-to-Text App
 
-Whisper transcription on Databricks: register model → create endpoint → run Gradio app. No bundles, just code.
+Whisper transcription on Databricks: one-time setup (notebook) → then run the Gradio app. No bundles, just code.
+
+---
+
+## Config (one file)
+
+All catalog, schema, and endpoint settings live in **`config.py`**. Edit that file only; the rest of the code reads from it.
+
+| Setting | Default | Description |
+|--------|---------|-------------|
+| `CATALOG` | `hls_amer_catalog` | Unity Catalog catalog |
+| `SCHEMA` | `voice-to-text` | Schema name |
+| `ENDPOINT_NAME` | `whisper-transcription` | Model Serving endpoint name |
+| `WORKLOAD_SIZE` | `Medium` | Endpoint size |
+
+You can still override with environment variables (e.g. `CATALOG`, `SCHEMA`) if needed.
+
+---
 
 ## Upload to workspace
 
-1. In Databricks, go to **Workspace** → your user folder.
-2. Create a folder (e.g. `voice-to-text-app`) and upload:
-   - `register_model.py`
-   - `create_endpoint.py`
-   - `app.py`
-   - `requirements.txt`
+Upload this folder to your Databricks workspace (e.g. **Workspace** → **Users** → **&lt;you&gt;** → **voice-to-text-app**). Include:
 
-Or use **Repos** and clone this repo into the workspace.
-
----
-
-## Setup (one-time)
-
-### 1. Register the Whisper model
-
-- Create a **notebook** in the same workspace (or in the folder above).
-- Attach a **cluster** (single node is enough; GPU speeds up the first run).
-- In the notebook, set your catalog/schema and run the script:
-
-```python
-# Cell 1: config (edit catalog/schema if needed)
-import os
-os.environ["CATALOG"] = "main"   # your Unity Catalog catalog
-os.environ["SCHEMA"] = "default"
-
-# Cell 2: run the registration script
-%run /Workspace/Users/<your-email>/voice-to-text-app/register_model
-```
-
-- Install dependencies on the cluster if needed: `pip install mlflow databricks-sdk pandas numpy transformers torch soundfile` (or use a cluster with these libs).
-
-### 2. Create the serving endpoint
-
-- After the model is **READY** in the catalog (check in **Catalog** → your catalog → schema → model), run:
-
-```python
-%run /Workspace/Users/<your-email>/voice-to-text-app/create_endpoint
-```
-
-- Wait **10–15 minutes** until the endpoint status is **READY** (Serving → your endpoint).
-
-### 3. Run the Gradio app
-
-- Create a **new notebook**, attach the **same cluster** (or any cluster with `gradio`, `requests`, `databricks-sdk`).
-- Run:
-
-```python
-%run /Workspace/Users/<your-email>/voice-to-text-app/app
-```
-
-- Click the **gradio.live** (or similar) URL shown in the cell output to open the app. Record or upload audio and click **Transcribe**.
+- **config.py**
+- **register_model.py**
+- **create_endpoint.py**
+- **app/** (folder with **app.py** and **requirements.txt**)
+- **Setup.ipynb**
+- **requirements.txt** (for setup / cluster libs)
 
 ---
 
-## Config (environment variables)
+## One-time setup (run the notebook)
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `CATALOG` | `main` | Unity Catalog catalog |
-| `SCHEMA` | `default` | Schema name |
-| `ENDPOINT_NAME` | `whisper-transcription` | Serving endpoint name |
-| `WORKLOAD_SIZE` | `Medium` | Endpoint size |
-| `DATABRICKS_CONFIG_PROFILE` | (default) | CLI profile when run locally |
+1. Open **Setup.ipynb** in that folder.
+2. In the first code cell, set **REPO_PATH** if your folder is not at:
+   `/Workspace/Users/raven.mukherjee@databricks.com/voice-to-text-app`
+3. Attach a **cluster** and run the notebook **Run all** (or run cells in order).
+4. After **1. Register Whisper model**: wait until the model is **READY** in **Catalog** (your catalog → schema → `whisper_base_transcription`).
+5. Run **2. Create serving endpoint**. Wait **10–15 minutes** until the endpoint is **READY** under **Serving**.
+
+No `%run` of `.py` files; the notebook uses `runpy` to execute the scripts.
+
+---
+
+## Run the app
+
+When the endpoint is **READY**, you can run the Gradio UI in either of these ways.
+
+### Option A – From a notebook
+
+In a new notebook (same folder or same path on `sys.path):
+
+```python
+REPO_PATH = "/Workspace/Users/raven.mukherjee@databricks.com/voice-to-text-app"
+import sys
+sys.path.insert(0, REPO_PATH)
+import runpy
+runpy.run_path(REPO_PATH + "/app/app.py", run_name="__main__")
+```
+
+Then open the URL shown in the output.
+
+### Option B – As a Databricks App
+
+1. In Databricks: **Apps** → **Create app**.
+2. Set **Source** to the **repo root** (the folder that contains `app/` and `config.py`).
+3. **Start command:** `python app/app.py`
+4. Use **app/requirements.txt** for the app’s dependencies (gradio, requests, databricks-sdk) if the UI lets you set a requirements path; otherwise the root **requirements.txt** is fine.
+5. Start the app and open the URL provided.
 
 ---
 
@@ -76,10 +79,12 @@ With Databricks CLI configured (`databricks configure`):
 
 ```bash
 pip install -r requirements.txt
-export CATALOG=main SCHEMA=default
 python register_model.py
 python create_endpoint.py
 # wait for endpoint READY, then:
-python app.py
+pip install -r app/requirements.txt
+python app/app.py
 # open http://localhost:7860
 ```
+
+Config is read from **config.py** (or override with env vars).

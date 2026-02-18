@@ -7,7 +7,6 @@ Run in Databricks: create a notebook, attach a cluster, then run this file
 Or run locally with: python register_model.py
 """
 
-import os
 import mlflow
 import pandas as pd
 import numpy as np
@@ -16,11 +15,7 @@ import io
 
 from databricks.sdk import WorkspaceClient
 
-CATALOG = os.getenv("CATALOG", "main")
-SCHEMA = os.getenv("SCHEMA", "default")
-MODEL_NAME = "whisper_base_transcription"
-FULL_MODEL_NAME = f"{CATALOG}.{SCHEMA}.{MODEL_NAME}"
-PROFILE = os.getenv("DATABRICKS_CONFIG_PROFILE")
+from config import CATALOG, SCHEMA, MODEL_NAME, FULL_MODEL_NAME, PROFILE
 
 
 class WhisperTranscriptionModel(mlflow.pyfunc.PythonModel):

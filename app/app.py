@@ -1,19 +1,24 @@
 """
 Gradio voice-to-text UI. Calls the Whisper Model Serving endpoint.
 
-Run in a Databricks notebook (same folder as this file):
-  %run ./app
-  # or: %run /Workspace/Users/<you>/voice-to-text-app/app
-Then open the URL shown in the notebook output.
+Run from repo root: python app/app.py
+Or in Databricks: point the App at the repo root, start command: python app/app.py
 """
 
 import base64
 import os
+import sys
+
+# Ensure repo root is on path so we can import config
+_repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if _repo_root not in sys.path:
+    sys.path.insert(0, _repo_root)
+
 import gradio as gr
 import requests
 from databricks.sdk import WorkspaceClient
 
-ENDPOINT_NAME = os.getenv("ENDPOINT_NAME", "whisper-transcription")
+from config import ENDPOINT_NAME
 
 
 def transcribe(audio_path: str) -> str:

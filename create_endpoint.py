@@ -5,16 +5,10 @@ Run after register_model.py, once the model version is READY.
 In Databricks: %run /Workspace/Users/<you>/voice-to-text-app/create_endpoint
 """
 
-import os
 from databricks.sdk import WorkspaceClient
 from databricks.sdk.service.serving import EndpointCoreConfigInput, ServedEntityInput
 
-CATALOG = os.getenv("CATALOG", "main")
-SCHEMA = os.getenv("SCHEMA", "default")
-PROFILE = os.getenv("DATABRICKS_CONFIG_PROFILE")
-ENDPOINT_NAME = os.getenv("ENDPOINT_NAME", "whisper-transcription")
-WORKLOAD_SIZE = os.getenv("WORKLOAD_SIZE", "Medium")
-FULL_MODEL_NAME = f"{CATALOG}.{SCHEMA}.whisper_base_transcription"
+from config import FULL_MODEL_NAME, ENDPOINT_NAME, WORKLOAD_SIZE, PROFILE
 
 w = WorkspaceClient(profile=PROFILE) if PROFILE else WorkspaceClient()
 

@@ -1,0 +1,4 @@
+# Dependencies for the Gradio app (app.py).
+gradio>=5.0.0
+requests>=2.31.0
+databricks-sdk>=0.18.0
