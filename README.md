@@ -37,10 +37,10 @@ voice-to-text-app/
 ├── register_model.py          # Log Whisper model to MLflow → Unity Catalog
 ├── create_endpoint.py         # Create Model Serving endpoint
 ├── Setup.ipynb                # One-time setup notebook (widgets for catalog/schema)
-├── requirements.txt           # Setup deps: mlflow, databricks-sdk, torch, transformers, etc.
+├── requirements.txt           # For setup notebook / local: mlflow, databricks-sdk, torch, transformers, soundfile, etc.
 └── app/
-    ├── app.py                 # Gradio UI
-    └── requirements.txt      # gradio, databricks-sdk, requests
+    ├── app.py                 # Gradio UI (entry point for Databricks App: python app/app.py)
+    └── requirements.txt       # App only: gradio, databricks-sdk, requests
 ```
 
 ## Prerequisites
@@ -84,9 +84,9 @@ If you run `register_model.py` or `create_endpoint.py` without setting these, th
 When the endpoint is **READY**, run the app as a **Databricks App**. See the [Databricks Apps get-started guide](https://learn.microsoft.com/en-us/azure/databricks/dev-tools/databricks-apps/get-started).
 
 1. In your workspace, click **+ New** → **App** (or **Apps** → **Create app**).
-2. **Source:** point the app at the **repo root** (the cloned folder that contains `app/` and `config.py`).
+2. **Source:** point the app at the **repo root** (the cloned folder that contains `app/`, `config.py`, `register_model.py`, etc.). Do not point only at the `app/` subfolder — the app imports from `config` and may need the repo root on the path.
 3. **Start command:** `python app/app.py`
-4. Set **Requirements** to **app/requirements.txt** if the UI allows; otherwise the app runtime can use the root **requirements.txt**.
+4. Set **Requirements** to **app/requirements.txt** if the UI allows (gradio, databricks-sdk, requests only). Otherwise the root **requirements.txt** works but pulls in heavier setup deps (torch, transformers, etc.).
 5. Create/install the app. It will start and show an **app URL** on the Overview page.
 6. Click the URL to open the app. Grant the app **Can query** on the **whisper-transcription** serving endpoint (Serving → endpoint → Permissions).
 
