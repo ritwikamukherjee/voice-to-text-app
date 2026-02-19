@@ -1,6 +1,12 @@
-# Voice-to-Text App
+# Voice-to-Text Databricks App
 
-Whisper transcription on Databricks: clone the repo → one-time setup (notebook) → deploy and run the Gradio app as a Databricks App. No bundles, just code. No catalog, schema, or workspace names are hardcoded — you configure them.
+A Gradio web app that transcribes audio using OpenAI's [Whisper](https://github.com/openai/whisper) model, deployed end-to-end on Databricks.
+
+Users record audio via microphone or upload a file, and the app returns a text transcription powered by a Whisper model running on a Databricks Model Serving endpoint.
+
+**Flow:** Clone the repo → one-time setup (notebook) → deploy and run the app as a Databricks App. No bundles, just code. Catalog, schema, and workspace are not hardcoded — you configure them (e.g. via widgets in the setup notebook).
+
+> **Disclaimer:** This project is a solution accelerator. It is provided as-is for reference and experimentation. Use and adapt it to your own environment and requirements; it is not an officially supported product.
 
 ---
 
@@ -67,4 +73,33 @@ Set **ENDPOINT_NAME** in config or env if you used a different endpoint name.
 
 ## Run locally (optional)
 
-For local development or debugging, use the [Databricks Apps get-started guide](https://learn.microsoft.com/en-us/azure/databricks/dev-tools/databricks-apps/get-started): set up your environment, then from the app directory run `databricks apps run-local --prepare-environment --debug` (or `python app/app.py` with **CATALOG** and **SCHEMA** set in config or env). Re-deploy to the workspace using the deploy command from the app Overview page.
+Running the app locally is optional and intended for **development and debugging**. The primary way to run the app is as a Databricks App (see above). If you want to iterate on code or test without deploying to the workspace:
+
+1. **Clone and enter the repo:**
+   ```bash
+   git clone https://github.com/ritwikamukherjee/voice-to-text-app.git
+   cd voice-to-text-app
+   ```
+
+2. **Set configuration** in `config.py` (set `CATALOG` and `SCHEMA`) or export environment variables:
+   ```bash
+   export CATALOG=your_catalog
+   export SCHEMA=your_schema
+   ```
+
+3. **One-time setup** (register model and create endpoint; requires Databricks CLI configured with `databricks configure`):
+   ```bash
+   pip install -r requirements.txt
+   python register_model.py
+   python create_endpoint.py
+   ```
+   Wait for the model to be READY in the catalog, then for the endpoint to be READY (10–15 minutes). Grant your user **Can query** on the endpoint if needed.
+
+4. **Run the Gradio app:**
+   ```bash
+   pip install -r app/requirements.txt
+   python app/app.py
+   ```
+   Open `http://localhost:7860` in a browser.
+
+Alternatively, use the [Databricks Apps get-started guide](https://learn.microsoft.com/en-us/azure/databricks/dev-tools/databricks-apps/get-started) to sync the app from your workspace and run `databricks apps run-local --prepare-environment --debug` from the app directory for a workspace-like environment and debugger. Re-deploy to the workspace using the deploy command from the app Overview page when you are done.
