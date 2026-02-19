@@ -9,16 +9,18 @@ import base64
 import os
 import sys
 
-# Ensure repo root is on path so we can import config
+# Prefer config from repo root (when run from repo); fallback to env when only app/ is deployed (e.g. Databricks App)
 _repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if _repo_root not in sys.path:
     sys.path.insert(0, _repo_root)
+try:
+    from config import ENDPOINT_NAME
+except ImportError:
+    ENDPOINT_NAME = os.getenv("ENDPOINT_NAME", "whisper-transcription")
 
 import gradio as gr
 import requests
 from databricks.sdk import WorkspaceClient
-
-from config import ENDPOINT_NAME
 
 
 def transcribe(audio_path: str) -> str:
