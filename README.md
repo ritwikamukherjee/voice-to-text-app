@@ -36,7 +36,7 @@ voice-to-text-app/
 ├── config.py                  # Catalog, schema, endpoint (edit or set via env/widgets)
 ├── register_model.py          # Log Whisper model to MLflow → Unity Catalog
 ├── create_endpoint.py         # Create Model Serving endpoint
-├── Setup.ipynb                # One-time setup notebook (widgets for catalog/schema)
+├── Setup.ipynb                # One-time setup notebook (widgets: catalog, schema, workspace user)
 ├── requirements.txt           # For setup notebook / local: mlflow, databricks-sdk, torch, transformers, soundfile, etc.
 └── app/
     ├── app.py                 # Gradio UI (entry point for Databricks App: python app/app.py)
@@ -62,17 +62,16 @@ In Databricks: **Repos** → **Add repo** → use the repo URL, or clone into a 
 
 ### 2. Configure catalog and schema
 
-Set **CATALOG** and **SCHEMA** (and optionally **ENDPOINT_NAME**) before running setup or the app.
+**If you use the Setup notebook:** Just fill in the **Catalog**, **Schema**, and **Workspace user (email)** widgets in the first cell. The notebook passes those into the scripts — **you do not need to edit `config.py`.**
 
-- **Option A — Edit `config.py`:** Set `CATALOG`, `SCHEMA`, and optionally `ENDPOINT_NAME`.
-- **Option B — Environment variables / notebook widgets (recommended):** In **Setup.ipynb**, use the **Catalog** and **Schema** text widgets in the first code cell; they set the environment for the rest of the notebook. You can also set `CATALOG` and `SCHEMA` in your shell or notebook environment.
+**If you run the scripts outside the notebook** (e.g. from the command line locally): Set **CATALOG** and **SCHEMA** in `config.py` or as environment variables (`export CATALOG=... SCHEMA=...`). Otherwise the scripts exit with a message asking you to configure them.
 
-If you run `register_model.py` or `create_endpoint.py` without setting these, the scripts exit with a clear message asking you to configure them.
+**ENDPOINT_NAME** is optional (default: `whisper-transcription`). It’s the name of the Model Serving endpoint. Change it only in config or env if you want a different endpoint name; `create_endpoint.py` and the app both use it.
 
 ### 3. One-time setup (run the notebook)
 
 1. Open **Setup.ipynb** in the cloned repo (in your workspace or locally).
-2. In the first code cell, enter your **Catalog** and **Schema** in the widgets, and set **REPO_PATH** to the path where the repo lives (e.g. `/Workspace/Users/<your-email>/voice-to-text-app` or your Repos path).
+2. In the first code cell, fill in all three widgets: **Catalog**, **Schema**, and **Workspace user (email)**. The repo path is built from your email as `/Workspace/Users/<your-email>/voice-to-text-app`. If your repo lives elsewhere (e.g. under Repos), you can set **REPO_PATH** manually in that cell.
 3. Run the first cell to apply widgets and path.
 4. Attach a cluster and run the rest of the notebook in order:
    - **Register Whisper model** — run the cell; wait until you see `Registered: ... version N`.
@@ -88,7 +87,7 @@ When the endpoint is **READY**, run the app as a **Databricks App**. See the [Da
 3. **Start command:** `python app/app.py`
 4. Set **Requirements** to **app/requirements.txt** if the UI allows (gradio, databricks-sdk, requests only). Otherwise the root **requirements.txt** works but pulls in heavier setup deps (torch, transformers, etc.).
 5. Create/install the app. It will start and show an **app URL** on the Overview page.
-6. Click the URL to open the app. Grant the app **Can query** on the **whisper-transcription** serving endpoint (Serving → endpoint → Permissions).
+6. Click the URL to open the app. Grant the app **Can query** on the serving endpoint (Serving → endpoint → Permissions). The endpoint name is whatever you set as **ENDPOINT_NAME** (default: `whisper-transcription`).
 
 To re-deploy after code changes, use the **Deploy** action or the deploy command on the app Overview page.
 
@@ -104,7 +103,7 @@ Setup scripts and the app read configuration from **config.py** or environment v
 |----------|-------------|
 | `CATALOG` | Unity Catalog catalog (required; set in config.py, env, or notebook widgets) |
 | `SCHEMA` | Schema within the catalog (required) |
-| `ENDPOINT_NAME` | Name of the serving endpoint (default: `whisper-transcription`) |
+| `ENDPOINT_NAME` | Name of the Model Serving endpoint. Default `whisper-transcription`. If you change it, `create_endpoint.py` creates an endpoint with that name and the app calls it. |
 | `WORKLOAD_SIZE` | Serving endpoint size: `Small`, `Medium`, `Large` (default: `Medium`) |
 | `DATABRICKS_CONFIG_PROFILE` | Databricks CLI profile name (optional, for local run) |
 
