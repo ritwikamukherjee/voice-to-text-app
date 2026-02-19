@@ -15,7 +15,9 @@ import io
 
 from databricks.sdk import WorkspaceClient
 
-from config import CATALOG, SCHEMA, MODEL_NAME, FULL_MODEL_NAME, PROFILE
+from config import CATALOG, SCHEMA, MODEL_NAME, FULL_MODEL_NAME, PROFILE, require_catalog_schema
+
+require_catalog_schema()
 
 
 class WhisperTranscriptionModel(mlflow.pyfunc.PythonModel):

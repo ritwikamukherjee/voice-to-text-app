@@ -8,8 +8,9 @@ In Databricks: %run /Workspace/Users/<you>/voice-to-text-app/create_endpoint
 from databricks.sdk import WorkspaceClient
 from databricks.sdk.service.serving import EndpointCoreConfigInput, ServedEntityInput
 
-from config import FULL_MODEL_NAME, ENDPOINT_NAME, WORKLOAD_SIZE, PROFILE
+from config import FULL_MODEL_NAME, ENDPOINT_NAME, WORKLOAD_SIZE, PROFILE, require_catalog_schema
 
+require_catalog_schema()
 w = WorkspaceClient(profile=PROFILE) if PROFILE else WorkspaceClient()
 
 versions = list(w.model_versions.list(full_name=FULL_MODEL_NAME))
