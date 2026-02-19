@@ -40,9 +40,8 @@ Upload this folder to your Databricks workspace (e.g. **Workspace** → **Users*
 ## One-time setup (run the notebook)
 
 1. Open **Setup.ipynb** in that folder.
-2. In the first code cell, set **REPO_PATH** to your workspace folder path (e.g. `/Workspace/Users/&lt;your-email&gt;/voice-to-text-app`).
-3. Ensure **config.py** has **CATALOG** and **SCHEMA** set (or set them via environment variables in the notebook).
-4. Attach a **cluster** and run the notebook (Run all or run cells in order).
+2. In the first code cell, enter your **Catalog** and **Schema** in the widgets, and set **REPO_PATH** to your workspace folder path (e.g. `/Workspace/Users/&lt;your-email&gt;/voice-to-text-app`).
+3. Attach a **cluster** and run the notebook (Run all or run cells in order).
 5. After **1. Register Whisper model**: wait until the model is **READY** in **Catalog** (your catalog → schema → `whisper_base_transcription`).
 6. Run **2. Create serving endpoint**. Wait **10–15 minutes** until the endpoint is **READY** under **Serving**.
 
