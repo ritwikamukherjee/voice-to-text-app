@@ -45,6 +45,7 @@ voice-to-text-app/
 
 ## Prerequisites
 
+- **Cluster with Machine Learning enabled:** When creating compute, tick the **Machine learning** option. This uses Databricks Runtime for Machine Learning with preinstalled libraries (PyTorch, TensorFlow, XGBoost, MLflow, etc.) required for the Register Whisper model step.
 - [Databricks CLI](https://docs.databricks.com/dev-tools/cli/index.html) (optional for local setup; configure with `databricks configure`)
 - Python 3.11+ (for local run or cluster running the setup notebook)
 - A Unity Catalog catalog and schema you have write access to
@@ -73,7 +74,7 @@ In Databricks: **Repos** → **Add repo** → use the repo URL, or clone into a 
 1. Open **Setup.ipynb** in the cloned repo (in your workspace or locally).
 2. In the first code cell, fill in all three widgets: **Catalog**, **Schema**, and **Workspace user (email)**. The repo path is built from your email as `/Workspace/Users/<your-email>/voice-to-text-app`. If your repo lives elsewhere (e.g. under Repos), you can set **REPO_PATH** manually in that cell.
 3. Run the first cell to apply widgets and path.
-4. Attach a cluster and run the rest of the notebook in order:
+4. Attach a cluster that has **Machine learning** enabled (see Prerequisites) and run the rest of the notebook in order:
    - **Register Whisper model** — run the cell; wait until you see `Registered: ... version N`.
    - Wait for the model to be **READY** in **Catalog** (your catalog → schema → `whisper_base_transcription`).
    - **Create serving endpoint** — run the cell; wait **10–15 minutes** until the endpoint is **READY** under **Serving**.
